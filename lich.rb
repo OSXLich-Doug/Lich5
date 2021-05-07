@@ -35,7 +35,7 @@
 # Lich is maintained by Matt Lowe (tillmen@lichproject.org)
 # Lich version 5 and higher maintained by Elanthia Online and only supports GTK3 Ruby
 
-LICH_VERSION = '5.0.6'
+LICH_VERSION = '5.0.7'
 TESTING = false
 
 if RUBY_VERSION !~ /^2|^3/
@@ -10645,53 +10645,104 @@ else
 end
 
 if defined?(Gtk)
-  unless File.exists?('fly64.png')
-    File.open('fly64.png', 'wb') { |f| f.write '
-         iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAChVBMVEUAAAAA
-         AAABAQECAgIDAwMEBAQFBQUGBgYHBwcICAgKCgoLCwsMDAwNDQ0ODg4QEBAR
-         ERESEhITExMUFBQWFhYXFxcYGBgZGRkaGhobGxscHBwdHR0eHh4fHx8hISEi
-         IiIjIyMkJCQmJiYnJycoKCgpKSksLCwtLS0uLi4vLy8wMDAyMjIzMzM1NTU2
-         NjY4ODg6Ojo7Ozs8PDw9PT0+Pj5AQEBBQUFCQkJDQ0NERERFRUVGRkZHR0dJ
-         SUlKSkpLS0tMTExNTU1OTk5PT09QUFBRUVFSUlJTU1NUVFRVVVVWVlZXV1dY
-         WFhZWVlaWlpcXFxdXV1eXl5gYGBiYmJjY2NkZGRnZ2dpaWlqampra2tsbGxt
-         bW1ubm5vb29xcXFycnJ0dHR1dXV2dnZ4eHh5eXl6enp7e3t8fHx9fX1/f3+A
-         gICBgYGCgoKDg4OEhISFhYWGhoaHh4eJiYmKioqLi4uMjIyNjY2Ojo6Pj4+Q
-         kJCRkZGSkpKTk5OVlZWXl5eYmJiZmZmcnJydnZ2goKChoaGioqKjo6OlpaWm
-         pqanp6eoqKipqamqqqqrq6utra2urq6vr6+wsLCxsbGysrKzs7O0tLS1tbW2
-         tra3t7e4uLi5ubm6urq7u7u9vb2+vr6/v7/AwMDBwcHCwsLDw8PExMTFxcXH
-         x8fIyMjJycnLy8vMzMzPz8/Q0NDR0dHS0tLT09PV1dXW1tbX19fZ2dnc3Nzd
-         3d3e3t7f39/g4ODh4eHi4uLj4+Pk5OTl5eXm5ubn5+fo6Ojp6enq6urr6+vs
-         7Ozt7e3v7+/w8PDx8fHy8vLz8/P09PT19fX29vb39/f4+Pj5+fn6+vr7+/v8
-         /Pz9/f3+/v7////aGP7gAAAAAXRSTlMAQObYZgAABDZJREFUWMOll4tfVEUU
-         x+/vxgJlYmUKKZT4KIOgQi3toWA+e1CGEthDEJMwA/KR0UM0X/kow420QMns
-         pdVCaka0ApUh0YJF7u/vae7u3d175z4+W3c+n4WZs+d858ycM3NmFcWtcYiK
-         p8ZbPAL+KPXoQGOrR8DNHldwPtOjA6sf9+YBU7HRG+GbiZj+kycEt6Tiuf9L
-         IIUlh+/D9WeSQ3xIk15o9aTSoIY4dh0WDSczYb2velQJ64MrZ6G149qYd6hI
-         xgeG5mLqCW1ODr2KaLtfG+4F1ie3CLahjApf063VnAVbxbAdmJfsPvKaKnK3
-         bo+nDx0YZfgMkJl0HIiXybkwtOI+8SfoYiEDdit8DFixMAZQxafTHFzT6Ohn
-         JkAQp4VM5G+awYk6GqzbCisCMQa5M2+/2YV2hIT8fZbA1FZ2hCPB+TzqmNrQ
-         ow1PrsJmeQW7ovHugqWV7GivSRELemTToz4xvGHrxgxUWvaWz6dGZIvh0HJ7
-         tamDb60R/WW/WmPDWT5xAPq6Msxm9e9Vj4320msGoxvA81/ahZYTkGYz71Mi
-         my4dnKNGBnk7XJKC0yan2wBU6ofTX5qijZd3Mux8ghnq+vReidCVUPi67Foh
-         GLuHbsnJFAlQbdTm4TIhGveSC6FDXsN8Sn7uyhXS8gEnRiWwxgS40xrwwDyR
-         FGvtCfThbj5sBNxqo8iLGSoqbGO5H2jgoBFgX5+YpWLATj4FIqHZYiRU2hLe
-         BDZZF9czCViidfxGQn6fDeJ7oFYWs1lT/znSPSeF0oIQd+U7UnwGszXdHF3a
-         aQ5m1d9m7au3Q7qs+bZQmwjsjN3tN0n5sPhH6neYyNiv8lXJATYCr/D1BJby
-         sVYx5tnaZv/Rln2NS7Rxs+RAAT4hs7AqDiiGS8vYIu/Kb5hGpRv4OE6cI9vE
-         OtkrNwcsm8omvKuwwbAxnCEBQhzt7fmhe4C0O4y8cYzYojS8mADIXvtdi0o/
-         6qn0AmcNEmMTFeoN16I0X0vgbZiecO6wCcDlDhkdNQ8W4Unxf7I4R3HZOqP9
-         Q/wI9zgBwlwrquDFyKoNZegBI6BZe3L10978CO5qiXx1CosS8n+0e1x8DhRq
-         gCGFH4xD8S82xaC1aL0eFZbDUCv3AbO0SB7hXxXpiNS2tjzr+VMun4gHlbnp
-         hhXMBP5UmKP6NNtLurPHszLP0bHEExWKcQtbrirK6ATUmC7l7eIN4RSLYwjE
-         9eqAZyKKv0uHlpdnlDgQWIWRWD8APKirZU+Ri3h5gcN1XIALeq8/BTNjzwhU
-         WRa9odD+ml2hFkXLoLhRZ8dUuvGdVfPbhbaEC8AT4qAFxUWS2KhWXLGZ6+SI
-         rQtNImPG3yYeIKcTCb3N9pXqtI1fjBeIqX4aX8Cz/9sTfbijxxy1uqUef7XU
-         bvAIqG/yCNjuEaB0rvMIGHnBm73CfK8/4E+5A/4FccSsAIr2lfUAAAAASUVO
-         RK5CYII='.unpack('m')[0] }
+  unless File.exists?('logo.png')
+    File.open('logo.png', 'wb') { |f| f.write '
+      iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAA
+      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'.unpack('m')[0] }
   end
+
   begin
     Gtk.queue {
-      @default_icon = GdkPixbuf::Pixbuf.new(:file => 'fly64.png')
+      @default_icon = GdkPixbuf::Pixbuf.new(:file => 'logo.png')
       # Add a function to call for when GTK is idle
       GLib::Idle.add do
         gtk_sleep_while_idle
