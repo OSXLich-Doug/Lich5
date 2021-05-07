@@ -35,7 +35,7 @@
 # Lich is maintained by Matt Lowe (tillmen@lichproject.org)
 # Lich version 5 and higher maintained by Elanthia Online and only supports GTK3 Ruby
 
-LICH_VERSION = '5.0.7'
+LICH_VERSION = '5.0.8'
 TESTING = false
 
 if RUBY_VERSION !~ /^2|^3/
@@ -10761,6 +10761,7 @@ main_thread = Thread.new {
   $lich_char = Regexp.escape($clean_lich_char)
 
   launch_data = nil
+  require_relative("./lib/eaccess.rb")
 
   if ARGV.include?('--login')
     if File.exists?("#{DATA_DIR}/entry.dat")
@@ -10808,106 +10809,34 @@ main_thread = Thread.new {
         end
       }
 
-      login_server = nil
-      connect_thread = nil
-      timeout_thread = Thread.new {
-        sleep 30
-        $stdout.puts "error: timed out connecting to eaccess.play.net:7900"
-        Lich.log "error: timed out connecting to eaccess.play.net:7900"
-        connect_thread.kill rescue nil
-        login_server = nil
-      }
-      connect_thread = Thread.new {
-        begin
-          login_server = TCPSocket.new('eaccess.play.net', 7900)
-        rescue
-          login_server = nil
-          $stdout.puts "error connecting to server: #{$!}"
-          Lich.log "error connecting to server: #{$!}"
-        end
-      }
-      connect_thread.join
-      timeout_thread.kill rescue nil
+      launch_data_hash = EAccess.auth(
+        account: data[:user_id],
+        password: data[:password],
+        character: data[:char_name],
+        game_code: data[:game_code]
+      )
 
-      if login_server
-        login_server.puts "K\n"
-        hashkey = login_server.gets
-        if 'test'[0].class == String
-          password = data[:password].split('').collect { |c| c.getbyte(0) }
-          hashkey = hashkey.split('').collect { |c| c.getbyte(0) }
-        else
-          password = data[:password].split('').collect { |c| c[0] }
-          hashkey = hashkey.split('').collect { |c| c[0] }
+      launch_data = launch_data_hash.map{|k,v| "#{k.upcase}=#{v}"}
+        if data[:frontend] == 'wizard'
+              launch_data.collect! { |line| line.sub(/GAMEFILE=.+/, 'GAMEFILE=WIZARD.EXE').sub(/GAME=.+/, 'GAME=WIZ').sub(/FULLGAMENAME=.+/, 'FULLGAMENAME=Wizard Front End') }
+        elsif data[:frontend] == 'avalon'
+              launch_data.collect! { |line| line.sub(/GAME=.+/, 'GAME=AVALON') }
         end
-        password.each_index { |i| password[i] = ((password[i]-32)^hashkey[i])+32 }
-        password = password.collect { |c| c.chr }.join
-        login_server.puts "A\t#{data[:user_id]}\t#{password}\n"
-        password = nil
-        response = login_server.gets
-        login_key = /KEY\t([^\t]+)\t/.match(response).captures.first
-        if login_key
-          login_server.puts "M\n"
-          response = login_server.gets
-          if response =~ /^M\t/
-            login_server.puts "F\t#{data[:game_code]}\n"
-            response = login_server.gets
-            if response =~ /NORMAL|PREMIUM|TRIAL|INTERNAL|FREE/
-              login_server.puts "G\t#{data[:game_code]}\n"
-              login_server.gets
-              login_server.puts "P\t#{data[:game_code]}\n"
-              login_server.gets
-              login_server.puts "C\n"
-              char_code = login_server.gets.sub(/^C\t[0-9]+\t[0-9]+\t[0-9]+\t[0-9]+[\t\n]/, '').scan(/[^\t]+\t[^\t^\n]+/).find { |c| c.split("\t")[1] == data[:char_name] }.split("\t")[0]
-              login_server.puts "L\t#{char_code}\tSTORM\n"
-              response = login_server.gets
-              if response =~ /^L\t/
-                login_server.close unless login_server.closed?
-                launch_data = response.sub(/^L\tOK\t/, '').split("\t")
-                if data[:frontend] == 'wizard'
-                  launch_data.collect! { |line| line.sub(/GAMEFILE=.+/, 'GAMEFILE=WIZARD.EXE').sub(/GAME=.+/, 'GAME=WIZ').sub(/FULLGAMENAME=.+/, 'FULLGAMENAME=Wizard Front End') }
-                elsif data[:frontend] == 'avalon'
-                  launch_data.collect! { |line| line.sub(/GAME=.+/, 'GAME=AVALON') }
-                end
-                if data[:custom_launch]
-                  launch_data.push "CUSTOMLAUNCH=#{data[:custom_launch]}"
-                  if data[:custom_launch_dir]
-                    launch_data.push "CUSTOMLAUNCHDIR=#{data[:custom_launch_dir]}"
-                  end
-                end
-              else
-                login_server.close unless login_server.closed?
-                $stdout.puts "error: unrecognized response from server. (#{response})"
-                Lich.log "error: unrecognized response from server. (#{response})"
+        if data[:custom_launch]
+              launch_data.push "CUSTOMLAUNCH=#{login_info[:custom_launch]}"
+              if login_info[:custom_launch_dir]
+                launch_data.push "CUSTOMLAUNCHDIR=#{login_info[:custom_launch_dir]}"
               end
-            else
-              login_server.close unless login_server.closed?
-              $stdout.puts "error: unrecognized response from server. (#{response})"
-              Lich.log "error: unrecognized response from server. (#{response})"
-            end
-          else
-            login_server.close unless login_server.closed?
-            $stdout.puts "error: unrecognized response from server. (#{response})"
-            Lich.log "error: unrecognized response from server. (#{response})"
-          end
-        else
-          login_server.close unless login_server.closed?
-          $stdout.puts "Something went wrong... probably invalid user id and/or password.\nserver response: #{response}"
-          Lich.log "Something went wrong... probably invalid user id and/or password.\nserver response: #{response}"
-          reconnect_if_wanted.call
         end
-      else
-        $stdout.puts "error: failed to connect to server"
-        Lich.log "error: failed to connect to server"
-        reconnect_if_wanted.call
-        Lich.log "info: exiting..."
-        Gtk.queue { Gtk.main_quit } if defined?(Gtk)
-        exit
-      end
     else
       $stdout.puts "error: failed to find login data for #{char_name}"
       Lich.log "error: failed to find login data for #{char_name}"
     end
+
+  ## GUI starts here
+
   elsif defined?(Gtk) and (ARGV.empty? or argv_options[:gui])
+
     if File.exists?("#{DATA_DIR}/entry.dat")
       entry_data = File.open("#{DATA_DIR}/entry.dat", 'r') { |file|
         begin
@@ -10930,7 +10859,7 @@ main_thread = Thread.new {
       install_tab_loaded = false
 
       msgbox = proc { |msg|
-        dialog = Gtk::MessageDialog.new(window, Gtk::Dialog::DESTROY_WITH_PARENT, Gtk::MessageDialog::QUESTION, Gtk::MessageDialog::BUTTONS_CLOSE, msg)
+        dialog = Gtk::MessageDialog.new(window, Gtk::Dialog::DESTROY_WITH_PARENT, Gtk::MessageDialog::ERROR, Gtk::MessageDialog::BUTTONS_CLOSE, msg)
         #			dialog.set_icon(default_icon)
         dialog.run
         dialog.destroy
@@ -10951,7 +10880,7 @@ main_thread = Thread.new {
 
         account_book = Gtk::Notebook.new
         account_book.set_tab_pos(:left)
-		account_book.show_border=true
+		    account_book.show_border=true
         lightgrey = Gdk::RGBA::parse("#d3d3d3")
         account_book.override_background_color(:normal, lightgrey)
 
@@ -10968,11 +10897,6 @@ main_thread = Thread.new {
             if login_info[:game_name] != last_game_name
               horizontal_separator = Gtk::Separator.new(:horizontal)
               account_box.pack_start(horizontal_separator, :expand => false, :fill => false, :padding => 3)
-              instance_label = Gtk::Label.new('<span foreground="cadetblue" size="large"><b>' + login_info[:game_name] + '</b></span>')
-              instance_label.use_markup = true
-              account_box.pack_start(instance_label, :expand => false, :fill => false, :padding => 3)
-              horizontal_separator = Gtk::Separator.new(:horizontal)
-              account_box.pack_start(horizontal_separator, :expand => false, :fill => false, :padding => 3)
             end
             last_game_name = login_info[:game_name]
 
@@ -10985,9 +10909,9 @@ main_thread = Thread.new {
 
             play_button = Gtk::Button.new()
             char_label = Gtk::Label.new("#{login_info[:char_name]}")
-			char_label.set_width_chars(15)
+			      char_label.set_width_chars(15)
             fe_label = Gtk::Label.new("(#{login_info[:frontend].capitalize})")
-			fe_label.set_width_chars(15)
+			      fe_label.set_width_chars(15)
             char_label.set_alignment(0, 0.5)
             fe_label.set_alignment(0.1, 0.5)
             button_row = Gtk::Paned.new(:horizontal)
@@ -11000,12 +10924,12 @@ main_thread = Thread.new {
             remove_button = Gtk::Button.new()
             remove_label = Gtk::Label.new('<span foreground="red"><b>Remove</b></span>')
             remove_label.use_markup = true
-			remove_label.set_width_chars(10)
+			      remove_label.set_width_chars(10)
             remove_button.add(remove_label)
 
             remove_button.style_context.add_provider(button_provider, Gtk::StyleProvider::PRIORITY_USER)
             play_button.style_context.add_provider(button_provider, Gtk::StyleProvider::PRIORITY_USER)
-			account_book.style_context.add_provider(tab_provider, Gtk::StyleProvider::PRIORITY_USER)
+			      account_book.style_context.add_provider(tab_provider, Gtk::StyleProvider::PRIORITY_USER)
 
             char_box = Gtk::Box.new(:horizontal)
             char_box.pack_end(remove_button, :expand => true, :fill => false, :padding => 0)
@@ -11014,95 +10938,29 @@ main_thread = Thread.new {
 
             play_button.signal_connect('clicked') {
               play_button.sensitive = false
-              begin
-                login_server = nil
-                connect_thread = Thread.new {
-                  login_server = TCPSocket.new('eaccess.play.net', 7900)
-                }
-                300.times {
-                  sleep 0.1
-                  break unless connect_thread.status
-                }
-                if connect_thread.status
-                  connect_thread.kill rescue nil
-                  msgbox.call "error: timed out connecting to eaccess.play.net:7900"
-                end
-              rescue
-                msgbox.call "error connecting to server: #{$!}"
-                play_button.sensitive = true
-              end
-              if login_server
-                login_server.puts "K\n"
-                hashkey = login_server.gets
-                if 'test'[0].class == String
-                  password = login_info[:password].split('').collect { |c| c.getbyte(0) }
-                  hashkey = hashkey.split('').collect { |c| c.getbyte(0) }
-                else
-                  password = login_info[:password].split('').collect { |c| c[0] }
-                  hashkey = hashkey.split('').collect { |c| c[0] }
-                end
-                password.each_index { |i| password[i] = ((password[i] - 32) ^ hashkey[i]) + 32 }
-                password = password.collect { |c| c.chr }.join
-                login_server.puts "A\t#{login_info[:user_id]}\t#{password}\n"
-                password = nil
-                response = login_server.gets
-                login_key = /KEY\t([^\t]+)\t/.match(response).captures.first
-                if login_key
-                  login_server.puts "M\n"
-                  response = login_server.gets
-                  if response =~ /^M\t/
-                    login_server.puts "F\t#{login_info[:game_code]}\n"
-                    response = login_server.gets
-                    if response =~ /NORMAL|PREMIUM|TRIAL|INTERNAL|FREE/
-                      login_server.puts "G\t#{login_info[:game_code]}\n"
-                      login_server.gets
-                      login_server.puts "P\t#{login_info[:game_code]}\n"
-                      login_server.gets
-                      login_server.puts "C\n"
-                      char_code = login_server.gets.sub(/^C\t[0-9]+\t[0-9]+\t[0-9]+\t[0-9]+[\t\n]/, '').scan(/[^\t]+\t[^\t^\n]+/).find { |c| c.split("\t")[1] == login_info[:char_name] }.split("\t")[0]
-                      login_server.puts "L\t#{char_code}\tSTORM\n"
-                      response = login_server.gets
-                      if response =~ /^L\t/
-                        login_server.close unless login_server.closed?
-                        launch_data = response.sub(/^L\tOK\t/, '').split("\t")
-                        if login_info[:frontend] == 'wizard'
+                  launch_data_hash = EAccess.auth(
+                    account: login_info[:user_id],
+                    password: login_info[:password],
+                    character: login_info[:char_name],
+                    game_code: login_info[:game_code]
+                  )
+
+                  launch_data = launch_data_hash.map{|k,v| "#{k.upcase}=#{v}"}
+                    if login_info[:frontend] == 'wizard'
                           launch_data.collect! { |line| line.sub(/GAMEFILE=.+/, 'GAMEFILE=WIZARD.EXE').sub(/GAME=.+/, 'GAME=WIZ').sub(/FULLGAMENAME=.+/, 'FULLGAMENAME=Wizard Front End') }
-                        elsif login_info[:frontend] == 'avalon'
+                    elsif login_info[:frontend] == 'avalon'
                           launch_data.collect! { |line| line.sub(/GAME=.+/, 'GAME=AVALON') }
-                        end
-                        if login_info[:custom_launch]
+                    end
+                    if login_info[:custom_launch]
                           launch_data.push "CUSTOMLAUNCH=#{login_info[:custom_launch]}"
                           if login_info[:custom_launch_dir]
                             launch_data.push "CUSTOMLAUNCHDIR=#{login_info[:custom_launch_dir]}"
                           end
-                        end
-                        window.destroy
-                        done = true
-                      else
-                        login_server.close unless login_server.closed?
-                        msgbox.call("Unrecognized response from server. (#{response})")
-                        play_button.sensitive = true
-                      end
-                    else
-                      login_server.close unless login_server.closed?
-                      msgbox.call("Unrecognized response from server. (#{response})")
-                      play_button.sensitive = true
                     end
-                  else
-                    login_server.close unless login_server.closed?
-                    msgbox.call("Unrecognized response from server. (#{response})")
-                    play_button.sensitive = true
-                  end
-                else
-                  login_server.close unless login_server.closed?
-                  msgbox.call "Something went wrong... probably invalid user id and/or password.\nserver response: #{response}"
-                  play_button.sensitive = true
-                end
-              else
-                msgbox.call "error: failed to connect to server"
-                play_button.sensitive = true
-              end
+                    window.destroy
+                    done = true
             }
+
             remove_button.signal_connect('button-release-event') { |owner, ev|
               if (ev.event_type == Gdk::EventType::BUTTON_RELEASE) and (ev.button == 1)
                 if (ev.state.inspect =~ /shift-mask/)
@@ -11127,13 +10985,10 @@ main_thread = Thread.new {
           }
           account_book.append_page(account_box, Gtk::Label.new(account.upcase))
         }
-#        adjustment = Gtk::Adjustment.new(0, 0, 1000, 5, 20, 500)
-        quick_vp = Gtk::Viewport.new#(adjustment, adjustment)
-        quick_vp.add(account_book)
 
         quick_sw = Gtk::ScrolledWindow.new
         quick_sw.set_policy(:automatic, :automatic)
-        quick_sw.add(quick_vp)
+        quick_sw.add(account_book)
 
         quick_game_entry_tab = Gtk::Box.new(:vertical)
         quick_game_entry_tab.border_width = 5
@@ -11209,10 +11064,8 @@ main_thread = Thread.new {
       custom_launch_dir.append_text("../StormFront")
 
       make_quick_option = Gtk::CheckButton.new('Save this info for quick game entry')
-
       play_button = Gtk::Button.new(:label => ' Play ')
       play_button.sensitive = false
-
       play_button_box = Gtk::Box.new(:horizontal)
       play_button_box.pack_end(play_button, :expand => false, :fill => false, :padding => 5)
 
@@ -11250,90 +11103,38 @@ main_thread = Thread.new {
         iter[1] = 'working...'
         Gtk.queue {
           begin
-            login_server = nil
-            connect_thread = Thread.new {
-              login_server = TCPSocket.new('eaccess.play.net', 7900)
-            }
-            300.times {
-              sleep 0.1
-              break unless connect_thread.status
-            }
-            if connect_thread.status
-              connect_thread.kill rescue nil
-              msgbox.call "error: timed out connecting to eaccess.play.net:7900"
+            login_info = EAccess.auth(
+              account: user_id_entry.text || argv.account,
+              password: pass_entry.text || argv.password,
+              legacy: true
+            )
+
             end
-          rescue
-            msgbox.call "error connecting to server: #{$!}"
+          if login_info =~ /error/i
+            msgbox.call "\nSomething went wrong... probably invalid \nuser id and / or password.\n\nserver response: #{login_info}"
             connect_button.sensitive = true
+            disconnect_button = false
             user_id_entry.sensitive = true
             pass_entry.sensitive = true
+          else
+            liststore.clear
+            login_info.each do |row|
+              iter = liststore.append
+              iter[0] = row[:game_code]
+              iter[1] = row[:game_name]
+              iter[2] = row[:char_code]
+              iter[3] = row[:char_name]
+            end
           end
           disconnect_button.sensitive = true
-          if login_server
-            login_server.puts "K\n"
-            hashkey = login_server.gets
-            if 'test'[0].class == String
-              password = pass_entry.text.split('').collect { |c| c.getbyte(0) }
-              hashkey = hashkey.split('').collect { |c| c.getbyte(0) }
-            else
-              password = pass_entry.text.split('').collect { |c| c[0] }
-              hashkey = hashkey.split('').collect { |c| c[0] }
-            end
-            # pass_entry.text = String.new
-            password.each_index { |i| password[i] = ((password[i]-32)^hashkey[i])+32 }
-            password = password.collect { |c| c.chr }.join
-            login_server.puts "A\t#{user_id_entry.text}\t#{password}\n"
-            password = nil
-            response = login_server.gets
-            login_key = /KEY\t([^\t]+)\t/.match(response).captures.first
-            if login_key
-              login_server.puts "M\n"
-              response = login_server.gets
-              if response =~ /^M\t/
-                liststore.clear
-                for game in response.sub(/^M\t/, '').scan(/[^\t]+\t[^\t^\n]+/)
-                  game_code, game_name = game.split("\t")
-                  login_server.puts "N\t#{game_code}\n"
-                  if login_server.gets =~ /STORM/
-                    login_server.puts "F\t#{game_code}\n"
-                    if login_server.gets =~ /NORMAL|PREMIUM|TRIAL|INTERNAL|FREE/
-                      login_server.puts "G\t#{game_code}\n"
-                      login_server.gets
-                      login_server.puts "P\t#{game_code}\n"
-                      login_server.gets
-                      login_server.puts "C\n"
-                      for code_name in login_server.gets.sub(/^C\t[0-9]+\t[0-9]+\t[0-9]+\t[0-9]+[\t\n]/, '').scan(/[^\t]+\t[^\t^\n]+/)
-                        char_code, char_name = code_name.split("\t")
-                        iter = liststore.append
-                        iter[0] = game_code
-                        iter[1] = game_name
-                        iter[2] = char_code
-                        iter[3] = char_name
-                      end
-                    end
-                  end
-                end
-                disconnect_button.sensitive = true
-              else
-                login_server.close unless login_server.closed?
-                msgbox.call "Unrecognized response from server (#{response})"
-              end
-            else
-              login_server.close unless login_server.closed?
-              disconnect_button.sensitive = false
-              connect_button.sensitive = true
-              user_id_entry.sensitive = true
-              pass_entry.sensitive = true
-              msgbox.call "Something went wrong... probably invalid user id and/or password.\nserver response: #{response}"
-            end
-          end
+          login_server = true
         }
       }
+
       treeview.signal_connect('cursor-changed') {
-        if login_server
           play_button.sensitive = true
-        end
       }
+
       disconnect_button.signal_connect('clicked') {
         disconnect_button.sensitive = false
         play_button.sensitive = false
@@ -11343,28 +11144,20 @@ main_thread = Thread.new {
         user_id_entry.sensitive = true
         pass_entry.sensitive = true
       }
+
       play_button.signal_connect('clicked') {
         play_button.sensitive = false
         game_code = treeview.selection.selected[0]
-        char_code = treeview.selection.selected[2]
-        if login_server and not login_server.closed?
-          login_server.puts "F\t#{game_code}\n"
-          login_server.gets
-          login_server.puts "G\t#{game_code}\n"
-          login_server.gets
-          login_server.puts "P\t#{game_code}\n"
-          login_server.gets
-          login_server.puts "C\n"
-          login_server.gets
-          login_server.puts "L\t#{char_code}\tSTORM\n"
-          response = login_server.gets
-          if response =~ /^L\t/
-            login_server.close unless login_server.closed?
-            port = /GAMEPORT=([0-9]+)/.match(response).captures.first
-            host = /GAMEHOST=([^\t\n]+)/.match(response).captures.first
-            key = /KEY=([^\t\n]+)/.match(response).captures.first
-            launch_data = response.sub(/^L\tOK\t/, '').split("\t")
-            login_server.close unless login_server.closed?
+        char_name = treeview.selection.selected[3]
+
+        launch_data_hash = EAccess.auth(
+          account: user_id_entry.text,
+          password: pass_entry.text,
+          character: char_name,
+          game_code: game_code
+        )
+
+        launch_data = launch_data_hash.map{|k,v| "#{k.upcase}=#{v}"}
             if wizard_option.active?
               launch_data.collect! { |line| line.sub(/GAMEFILE=.+/, "GAMEFILE=WIZARD.EXE").sub(/GAME=.+/, "GAME=WIZ") }
             elsif avalon_option.active?
@@ -11402,29 +11195,25 @@ main_thread = Thread.new {
               entry_data.push h={ :char_name => treeview.selection.selected[3], :game_code => treeview.selection.selected[0], :game_name => treeview.selection.selected[1], :user_id => user_id_entry.text, :password => pass_entry.text, :frontend => frontend, :custom_launch => custom_launch, :custom_launch_dir => custom_launch_dir }
               save_entry_data = true
             end
+
+        if launch_data
             user_id_entry.text = String.new
             pass_entry.text = String.new
             window.destroy
             done = true
           else
-            login_server.close unless login_server.closed?
             disconnect_button.sensitive = false
             play_button.sensitive = false
             connect_button.sensitive = true
             user_id_entry.sensitive = true
             pass_entry.sensitive = true
           end
-        else
-          disconnect_button.sensitive = false
-          play_button.sensitive = false
-          connect_button.sensitive = true
-          user_id_entry.sensitive = true
-          pass_entry.sensitive = true
-        end
       }
+
       user_id_entry.signal_connect('activate') {
         pass_entry.grab_focus
       }
+
       pass_entry.signal_connect('activate') {
         connect_button.clicked
       }
@@ -11437,14 +11226,15 @@ main_thread = Thread.new {
       silver = Gdk::RGBA::parse("#d3d3d3")
       notebook = Gtk::Notebook.new
       notebook.override_background_color(:normal, silver)
-      notebook.append_page(quick_game_entry_tab, Gtk::Label.new('Quick Game Entry'))
-      notebook.append_page(game_entry_tab, Gtk::Label.new('Game Entry'))
+      notebook.append_page(quick_game_entry_tab, Gtk::Label.new('Saved Entry'))
+      notebook.append_page(game_entry_tab, Gtk::Label.new('Manual Entry'))
 
       notebook.signal_connect('switch-page') { |who,page,page_num|
         if (page_num == 2) and not install_tab_loaded
           refresh_button.clicked
         end
       }
+
       grey = Gdk::RGBA::parse("#d3d3d3")
       window = Gtk::Window.new
       window.set_icon(@default_icon)
@@ -11452,7 +11242,7 @@ main_thread = Thread.new {
       window.border_width = 5
       window.add(notebook)
       window.signal_connect('delete_event') { window.destroy; done = true }
-      window.default_width = 510
+      window.default_width = 550
       window.default_height = 550
       window.show_all
 
@@ -11477,6 +11267,12 @@ main_thread = Thread.new {
 	  exit
     end
   end
+
+
+  #
+  # open the client and have it connect to us
+  #
+
   $_SERVERBUFFER_ = LimitedArray.new
   $_SERVERBUFFER_.max_size = 400
   $_CLIENTBUFFER_ = LimitedArray.new
@@ -11484,9 +11280,6 @@ main_thread = Thread.new {
 
   Socket.do_not_reverse_lookup = true
 
-  #
-  # open the client and have it connect to us
-  #
   if argv_options[:sal]
     begin
       launch_data = File.open(argv_options[:sal]) { |file| file.readlines }.collect { |line| line.chomp }
@@ -11830,26 +11623,6 @@ main_thread = Thread.new {
   end
 
   listener = timeout_thr = nil
-=begin
-   #
-   # drop superuser privileges
-   #
-   unless (RUBY_PLATFORM =~ /mingw|win/i) and (RUBY_PLATFORM !~ /darwin/i)
-      Lich.log "info: dropping superuser privileges..."
-      begin
-         Process.uid = `id -ru`.strip.to_i
-         Process.gid = `id -rg`.strip.to_i
-         Process.egid = `id -rg`.strip.to_i
-         Process.euid = `id -ru`.strip.to_i
-      rescue SecurityError
-         Lich.log "error: failed to drop superuser privileges: #{$!}\n\t#{$!.backtrace.join("\n\t")}"
-      rescue SystemCallError
-         Lich.log "error: failed to drop superuser privileges: #{$!}\n\t#{$!.backtrace.join("\n\t")}"
-      rescue
-         Lich.log "error: failed to drop superuser privileges: #{$!}\n\t#{$!.backtrace.join("\n\t")}"
-      end
-   end
-=end
 
   # backward compatibility
   if $frontend =~ /^(?:wizard|avalon)$/
