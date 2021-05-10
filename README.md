@@ -4,9 +4,8 @@ Activities:
 2) Invite interim maintainers / testers - ongoing
 3) Remove Link tab from GUI - done
 4) Remove old 4.4 data backup - done
-
-5) Update logo - testing
-6) Update to SSL Account Auth - testing
+5) Update logo - done
+6) Update to SSL Account Auth - done
 
 To Do:
 
