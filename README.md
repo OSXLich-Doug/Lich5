@@ -9,6 +9,7 @@ Activities:
 7) Add Animalistic Spirit regex - testing
 8) Add thought regex for Invoker - testing
 9) Change 'fill_hands' and all subord methods to one overloaded method with aliases - testing
+
 Bonus) Clean up exit procs for clean debug logs - testing
 
 
