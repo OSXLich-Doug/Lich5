@@ -6648,13 +6648,15 @@ def sf_to_wiz(line)
     if line =~ /<preset id='speech'>(.*?)<\/preset>/m
       line = line.sub(/<preset id='speech'>.*?<\/preset>/m, "#{$speech_highlight_start}#{$1}#{$speech_highlight_end}")
     end
-  if line =~ /<pushStream id="thoughts"[^>]*>\[([^\\]+)\]\s*(.*?)<popStream\/>/m
-    thought_channel = $1
-	  msg = $2
-    thought_channel.gsub!(' ', '-')
-    line = line.sub(/<pushStream id="thoughts".*<popStream\/>/m, "You hear the faint thoughts of [#{thought_channel}]-ESP echo in your mind:\r\n#{msg}")
-  end
-  if line =~ /<pushStream id="voln"[^>]*>\[Voln \- (?:<a[^>]*>)?([A-Z][a-z]+)(?:<\/a>)?\]\s*(".*")[\r\n]*<popStream\/>/m
+    if line =~ /<pushStream id="thoughts"[^>]*>\[([^\\]+?)\]\s*(.*?)<popStream\/>/m
+      thought_channel = $1
+      msg = $2
+      thought_channel.gsub!(' ', '-')
+      msg.gsub!('<pushBold/>', '')
+      msg.gsub!('<popBold/>', '')
+      line = line.sub(/<pushStream id="thoughts".*<popStream\/>/m, "You hear the faint thoughts of [#{thought_channel}]-ESP echo in your mind:\r\n#{msg}")
+    end
+    if line =~ /<pushStream id="voln"[^>]*>\[Voln \- (?:<a[^>]*>)?([A-Z][a-z]+)(?:<\/a>)?\]\s*(".*")[\r\n]*<popStream\/>/m
       line = line.sub(/<pushStream id="voln"[^>]*>\[Voln \- (?:<a[^>]*>)?([A-Z][a-z]+)(?:<\/a>)?\]\s*(".*")[\r\n]*<popStream\/>/m, "The Symbol of Thought begins to burn in your mind and you hear #{$1} thinking, #{$2}\r\n")
     end
     if line =~ /<stream id="thoughts"[^>]*>([^:]+): (.*?)<\/stream>/m
