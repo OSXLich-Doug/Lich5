@@ -11,6 +11,7 @@ Activities:
 9) Change 'fill_hands' and all subord methods to one overloaded method with aliases - testing
 
 Bonus) Clean up exit procs for clean debug logs - testing
+
 Bonus) Update EAccess to deal with PEM damage / revocation - testing
 
 
