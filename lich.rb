@@ -35,7 +35,7 @@
 # Lich is maintained by Matt Lowe (tillmen@lichproject.org)
 # Lich version 5 and higher maintained by Elanthia Online and only supports GTK3 Ruby
 
-LICH_VERSION = '5.0.10'
+LICH_VERSION = '5.0.11'
 TESTING = false
 
 if RUBY_VERSION !~ /^2|^3/
@@ -11716,8 +11716,12 @@ main_thread = Thread.new {
   Vars.save
   Lich.log 'info: closing connections...'
   Game.close
-  $_CLIENT_.close rescue nil
-  #   Lich.db.close rescue nil
+  200.times { sleep 0.1; break if Game.closed? }
+  pause 0.5
+  $_CLIENT_.close
+  200.times { sleep 0.1; break if $_CLIENT_.closed? }
+  Lich.db.close
+  200.times {sleep 0.1; break if Lich.db.closed? }
   reconnect_if_wanted.call
   Lich.log "info: exiting..."
   Gtk.queue { Gtk.main_quit } if defined?(Gtk)
