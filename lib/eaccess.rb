@@ -2,32 +2,49 @@ require "openssl"
 require "socket"
 
 module EAccess
-  PEM = File.join(__dir__, "simu.pem")
+  PEM = File.join("#{DATA_DIR}/", "simu.pem")
 #  pp PEM
   PACKET_SIZE = 8192
 
-  def self.download_pem()
-    conn = self.socket()
-    File.write(EAccess::PEM, conn.peer_cert)
-    pp "wrote peer certificate to %s" % PEM
+  def self.pem_exist?
+    File.exist? PEM
+  end
+
+  def self.download_pem(hostname = "eaccess.play.net", port = 7910)
+    # Create an OpenSSL context
+    ctx = OpenSSL::SSL::SSLContext.new
+    # Get remote TCP socket
+    sock = TCPSocket.new(hostname, port)
+    # pass that socket to OpenSSL
+    ssl = OpenSSL::SSL::SSLSocket.new(sock, ctx)
+    # establish connection, if possible
+    ssl.connect
+    # write the .pem to disk
+    File.write(EAccess::PEM, ssl.peer_cert)
   end
 
   def self.verify_pem(conn)
-    return if conn.peer_cert.to_s == File.read(EAccess::PEM)
-    fail Exception, "\nssl peer certificate did not match #{EAccess::PEM}\nwas:\n#{conn.peer_cert}"
+    #return if conn.peer_cert.to_s = File.read(EAccess::PEM)
+    if !(conn.peer_cert.to_s == File.read(EAccess::PEM))
+      Lich.log "Exception, \nssl peer certificate did not match #{EAccess::PEM}\nwas:\n#{conn.peer_cert}"
+      download_pem
+    else
+      return true
+  end
+#     fail Exception, "\nssl peer certificate did not match #{EAccess::PEM}\nwas:\n#{conn.peer_cert}"
   end
 
   def self.socket(hostname = "eaccess.play.net", port = 7910)
+    download_pem unless pem_exist?
     socket = TCPSocket.open(hostname, port)
     cert_store              = OpenSSL::X509::Store.new
     ssl_context             = OpenSSL::SSL::SSLContext.new
     ssl_context.cert_store  = cert_store
-    #ssl_context.options     = (OpenSSL::SSL::OP_NO_SSLv2 + OpenSSL::SSL::OP_NO_SSLv3)
     ssl_context.verify_mode = OpenSSL::SSL::VERIFY_PEER
-    cert_store.add_file(EAccess::PEM)
+    cert_store.add_file(EAccess::PEM) if pem_exist?
     ssl_socket = OpenSSL::SSL::SSLSocket.new(socket, ssl_context)
     ssl_socket.sync_close = true
-    ssl_socket.connect
+    EAccess.verify_pem(ssl_socket.connect)
     return ssl_socket
   end
 
@@ -119,5 +136,3 @@ module EAccess
     conn.sysread(PACKET_SIZE)
   end
 end
-
-EAccess.download_pem() if ARGV.include?("--download-pem")

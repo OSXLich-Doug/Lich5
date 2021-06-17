@@ -6,12 +6,18 @@ Activities:
 4) Remove old 4.4 data backup - done
 5) Update logo - done
 6) Update to SSL Account Auth - done
+7) Add Animalistic Spirit regex - testing
+8) Add thought regex for Invoker - testing
+9) Change 'fill_hands' and all subord methods to one overloaded method with aliases - testing
+
+Bonus) Clean up exit procs for clean debug logs - testing
+
+Bonus) Update EAccess to deal with PEM damage / revocation - testing
+
 
 To Do:
 
-7) Add Animalistic Spirit regex
-8) Add thought regex for Invoker
-9) Change 'fill_hands' and all subord methods to one overloaded method with aliases
+
 
 --Recommended Update Release Point--
 
