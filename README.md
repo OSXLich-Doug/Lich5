@@ -9,7 +9,9 @@ Past Activities:
 7) Add Animalistic Spirit regex - done
 8) Add thought regex for Invoker - done
 9) Change 'fill_hands' and all subord methods to one overloaded method with aliases - done
+
 +) Clean up exit procs for clean debug logs - done
+
 +) Update EAccess to deal with PEM damage / revocation - done
 
 Current Activities:
