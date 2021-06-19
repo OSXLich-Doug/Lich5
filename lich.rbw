@@ -6125,9 +6125,9 @@ def stash_hands(right: false, left: false, both: false)
 
   general_get_regex = /.+ you (?:quickly|slowly) draw forth your .+ A ripple of (?:.+) light|^You (?:shield the opening of .*? from view as you |discreetly |carefully |deftly)?(?:remove|draw|grab|get|reach|slip|tuck|retrieve|already have)|^Get what\?$|^Why don't you leave some for others\?$|^You need a free hand/
 
-  @fill_hands_actions ||= Array.new
-  @fill_left_hand_actions ||= Array.new
-  @fill_right_hand_actions ||= Array.new
+  $fill_hands_actions ||= Array.new
+  $fill_left_hand_actions ||= Array.new
+  $fill_right_hand_actions ||= Array.new
 
   actions = Array.new
   right_hand = GameObj.right_hand
@@ -6232,35 +6232,35 @@ def stash_hands(right: false, left: false, both: false)
       end
     end
   end
-  @fill_hands_actions.push(actions) if both
-  @fill_left_hand_actions.push(actions) if left
-  @fill_right_hand_actions.push(actions) if right
+  $fill_hands_actions.push(actions) if both
+  $fill_left_hand_actions.push(actions) if left
+  $fill_right_hand_actions.push(actions) if right
 end
 
 def equip_hands(left: false, right: false, both: false)
-  @fill_hands_actions ||= Array.new
-  @fill_left_hand_actions ||= Array.new
-  @fill_right_hand_actions ||= Array.new
+  $fill_hands_actions ||= Array.new
+  $fill_left_hand_actions ||= Array.new
+  $fill_right_hand_actions ||= Array.new
 
   if both
-    for action in @fill_hands_actions.pop
+    for action in $fill_hands_actions.pop
       action.call
     end
   elsif left
-    for action in @fill_left_hand_actions.pop
+    for action in $fill_left_hand_actions.pop
       action.call
     end
   elsif right
-    for action in @fill_right_hand_actions.pop
+    for action in $fill_right_hand_actions.pop
       action.call
     end
   else
-    if @fill_right_hand_actions.length > 0
-      for action in @fill_right_hand_actions.pop
+    if $fill_right_hand_actions.length > 0
+      for action in $fill_right_hand_actions.pop
         action.call
       end
-    elsif @fill_left_hand_actions.length > 0
-      for action in @fill_left_hand_actions.pop
+    elsif $fill_left_hand_actions.length > 0
+      for action in $fill_left_hand_actions.pop
         action.call
       end
     end
