@@ -35,7 +35,7 @@
 # Lich is maintained by Matt Lowe (tillmen@lichproject.org)
 # Lich version 5 and higher maintained by Elanthia Online and only supports GTK3 Ruby
 
-LICH_VERSION = '5.0.11'
+LICH_VERSION = '5.0.12'
 TESTING = false
 
 if RUBY_VERSION !~ /^2|^3/
@@ -6152,9 +6152,9 @@ def stash_hands(right: false, left: false, both: false)
   }
   if (left || both) && left_hand.id
     waitrt?
-    if (left_hand.noun =~ /shield|buckler|targe|heater|parma|aegis|scutum|greatshield|mantlet|pavis|arbalest|bow|crossbow|yumi|arbalest/) and (wear_result = dothistimeout("wear ##{left_hand.id}", 8, /^You .*#{left_hand.noun}|^You can only wear \w+ items in that location\.$|^You can't wear that\.$/)) and (wear_result !~ /^You can only wear \w+ items in that location\.$|^You can't wear that\.$/)
+    if (left_hand.noun =~ /shield|buckler|targe|heater|parma|aegis|scutum|greatshield|mantlet|pavis|arbalest|bow|crossbow|yumi|arbalest/) and (wear_result = dothistimeout("wear ##{left_hand.id}", 8, /^You .*#{left_hand.noun}|^With careful precision, you|^You can only wear \w+ items in that location\.$|^You can't wear that\.$/)) and (wear_result !~ /^You can only wear \w+ items in that location\.$|^You can't wear that\.$/)
         actions.unshift proc {
-      dothistimeout "remove ##{left_hand.id}", 3, /^You|^Remove what\?/
+      dothistimeout "remove ##{left_hand.id}", 3, /^You|^With a slight roll of your shoulder, you|^Remove what\?/
       20.times { break if GameObj.left_hand.id == left_hand.id or GameObj.right_hand.id == left_hand.id; sleep 0.1 }
       if GameObj.right_hand.id == left_hand.id
         dothistimeout 'swap', 3, /^You don't have anything to swap!|^You swap/
