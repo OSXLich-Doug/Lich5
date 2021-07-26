@@ -10801,6 +10801,18 @@ main_thread = Thread.new {
             end
             last_game_name = login_info[:game_name]
 
+	    realm = ''
+
+  	    if login_info[:game_code] =~ /GSX/
+              realm = 'Platinum'
+            elsif login_info[:game_code] =~ /GST/
+              realm = 'Test'
+            elsif login_info[:game_code] =~ /GSF/
+              realm = 'Shattered'
+            else
+              realm = 'Prime'
+            end
+
             button_provider = Gtk::CssProvider.new
             button_provider.load(data:
               "button { font-size: 14px; color: navy; padding-top: 0px; \
@@ -10809,15 +10821,20 @@ main_thread = Thread.new {
                       button:hover { background-color: darkgrey; } ")
 
             play_button = Gtk::Button.new()
+            char_label = Gtk::Label.new("#{realm} - #{login_info[:char_name]}")
             char_label = Gtk::Label.new("#{login_info[:char_name]}")
-			      char_label.set_width_chars(15)
+            char_label.set_width_chars(15)
             fe_label = Gtk::Label.new("(#{login_info[:frontend].capitalize})")
-			      fe_label.set_width_chars(15)
+            fe_label.set_width_chars(10)
+            instance_label = Gtk::Label.new("#{realm}")
+            instance_label.set_width_chars(10)
             char_label.set_alignment(0, 0.5)
-            fe_label.set_alignment(0.1, 0.5)
             button_row = Gtk::Paned.new(:horizontal)
+            button_inset = Gtk::Paned.new(:horizontal)
+            button_inset.pack1(instance_label, :shrink => false)
+            button_inset.pack2(fe_label, :shrink => false)
             button_row.pack1(char_label, :shrink => false)
-            button_row.pack2(fe_label, :shrink => false)
+            button_row.pack2(button_inset, :shrink => false)
 
 
             play_button.add(button_row)
