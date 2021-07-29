@@ -8609,7 +8609,7 @@ class CMan
   @@flurry_of_blows        ||= 0
   @@footstomp              ||= 0 #new
   @@garrote                ||= 0
-  @@grappel_specialization ||= 0 #new
+  @@grapple_specialization ||= 0 #new
   @@griffins_voice         ||= 0
   @@groin_kick             ||= 0
   @@hamstring              ||= 0
