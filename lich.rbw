@@ -35,7 +35,7 @@
 # Lich is maintained by Matt Lowe (tillmen@lichproject.org)
 # Lich version 5 and higher maintained by Elanthia Online and only supports GTK3 Ruby
 
-LICH_VERSION = '5.0.14'
+LICH_VERSION = '5.0.15'
 TESTING = false
 
 if RUBY_VERSION !~ /^2|^3/
@@ -8577,18 +8577,16 @@ def circlename;    self.circle_name;                 end
 def selfonly;      @availability != 'all';           end
 end
 
+
 class CMan
   @@acrobats_leap          ||= 0
-  @@armor_spike_focus      ||= 0
   @@bearhug                ||= 0
   @@berserk                ||= 0
-  @@block_mastery          ||= 0
+  @@block_specialization   ||= 0 #new
   @@bull_rush              ||= 0
   @@burst_of_swiftness     ||= 0
-  @@charge                 ||= 0
   @@cheapshots             ||= 0
   @@combat_focus           ||= 0
-  @@combat_mastery         ||= 0
   @@combat_mobility        ||= 0
   @@combat_movement        ||= 0
   @@combat_toughness       ||= 0
@@ -8602,12 +8600,16 @@ class CMan
   @@divert                 ||= 0
   @@duck_and_weave         ||= 0
   @@dust_shroud            ||= 0
-  @@evade_mastery          ||= 0
+  @@evade_specialization   ||= 0 #new
+  @@eviscerate             ||= 0 #new
   @@executioners_stance    ||= 0
+  @@exsanguinate           ||= 0 #new
+  @@eyepoke                ||= 0 #new
   @@feint                  ||= 0
   @@flurry_of_blows        ||= 0
+  @@footstomp              ||= 0 #new
   @@garrote                ||= 0
-  @@grapple_mastery        ||= 0
+  @@grappel_specialization ||= 0 #new
   @@griffins_voice         ||= 0
   @@groin_kick             ||= 0
   @@hamstring              ||= 0
@@ -8616,61 +8618,56 @@ class CMan
   @@inner_harmony          ||= 0
   @@internal_power         ||= 0
   @@ki_focus               ||= 0
-  @@kick_mastery           ||= 0
+  @@kick_specialization    ||= 0 #new
+  @@kneebash               ||= 0 #new
+  @@leap_attack            ||= 0 #new
   @@mighty_blow            ||= 0
-  @@mystic_strike          ||= 0
-  @@parry_mastery          ||= 0
-  @@perfect_self           ||= 0
+  @@mug                    ||= 0 #new
+  @@nosetweak              ||= 0 #new
+  @@parry_specialization   ||= 0 #new
   @@precision              ||= 0
   @@predators_eye          ||= 0
-  @@punch_mastery          ||= 0
-  @@quickstrike            ||= 0
+  @@punch_specialization   ||= 0 #new
+  @@retreat                ||= 0 #new
   @@rolling_krynch_stance  ||= 0
-  @@shadow_dance           ||= 0
-  @@shadow_mastery         ||= 0
   @@shield_bash            ||= 0
-  @@shield_charge          ||= 0
   @@side_by_side           ||= 0
-  @@silent_strike          ||= 0
   @@slippery_mind          ||= 0
-  @@specialization_i       ||= 0
-  @@specialization_ii      ||= 0
-  @@specialization_iii     ||= 0
-  @@spell_cleaving         ||= 0
+  @@spell_cleave           ||= 0
   @@spell_parry            ||= 0
   @@spell_thieve           ||= 0
+  @@spike_focus            ||= 0 #new
   @@spin_attack            ||= 0
   @@staggering_blow        ||= 0
+  @@stance_perfection      ||= 0 #new
   @@stance_of_the_mongoose ||= 0
   @@striking_asp           ||= 0
   @@stun_maneuvers         ||= 0
-  @@subdual_strike         ||= 0
   @@subdue                 ||= 0
   @@sucker_punch           ||= 0
   @@sunder_shield          ||= 0
   @@surge_of_strength      ||= 0
   @@sweep                  ||= 0
+  @@swiftkick              ||= 0 #new
   @@tackle                 ||= 0
   @@tainted_bond           ||= 0
+  @@templeshot             ||= 0 #new
+  @@throatchop             ||= 0 #new
   @@trip                   ||= 0
   @@true_strike            ||= 0
-  @@twin_hammerfists       ||= 0
   @@unarmed_specialist     ||= 0
-  @@weapon_bonding         ||= 0
-  @@vanish                 ||= 0
+  @@vault_kick             ||= 0 #new
+  @@weapon_specialization  ||= 0 #new
   @@whirling_dervish       ||= 0
 
   def CMan.acrobats_leap;                @@acrobats_leap;              end
-  def CMan.armor_spike_focus;            @@armor_spike_focus;          end
   def CMan.bearhug;                      @@bearhug;                    end
   def CMan.berserk;                      @@berserk;                    end
-  def CMan.block_mastery;                @@block_mastery;              end
+  def CMan.block_specialization;         @@block_specialization;       end
   def CMan.bull_rush;                    @@bull_rush;                  end
   def CMan.burst_of_swiftness;           @@burst_of_swiftness;         end
-  def CMan.charge;                       @@charge;                     end
   def CMan.cheapshots;                   @@cheapshots;                 end
   def CMan.combat_focus;                 @@combat_focus;               end
-  def CMan.combat_mastery;               @@combat_mastery;             end
   def CMan.combat_mobility;              @@combat_mobility;            end
   def CMan.combat_movement;              @@combat_movement;            end
   def CMan.combat_toughness;             @@combat_toughness;           end
@@ -8684,12 +8681,15 @@ class CMan
   def CMan.divert;                       @@divert;                     end
   def CMan.duck_and_weave;               @@duck_and_weave;             end
   def CMan.dust_shroud;                  @@dust_shroud;                end
-  def CMan.evade_mastery;                @@evade_mastery;              end
+  def CMan.evade_specialization;         @@evade_specialization;       end
+  def CMan.eviscerate;                   @@eviscerate;                 end
   def CMan.executioners_stance;          @@executioners_stance;        end
+  def CMan.exsanguinate;                 @@exsanguinate;               end
+  def CMan.eyepoke;                      @@eyepoke;                    end
   def CMan.feint;                        @@feint;                      end
   def CMan.flurry_of_blows;              @@flurry_of_blows;            end
   def CMan.garrote;                      @@garrote;                    end
-  def CMan.grapple_mastery;              @@grapple_mastery;            end
+  def CMan.grapple_specialization;       @@grapple_specialization;     end
   def CMan.griffins_voice;               @@griffins_voice;             end
   def CMan.groin_kick;                   @@groin_kick;                 end
   def CMan.hamstring;                    @@hamstring;                  end
@@ -8698,131 +8698,123 @@ class CMan
   def CMan.inner_harmony;                @@inner_harmony;              end
   def CMan.internal_power;               @@internal_power;             end
   def CMan.ki_focus;                     @@ki_focus;                   end
-  def CMan.kick_mastery;                 @@kick_mastery;               end
+  def CMan.kick_specialization;          @@kick_specialization;        end
+  def CMan.kneebash;                     @@kneebash;                   end
+  def CMan.leap_attack;                  @@leap_attack;                end
   def CMan.mighty_blow;                  @@mighty_blow;                end
-  def CMan.mystic_strike;                @@mystic_strike;              end
-  def CMan.parry_mastery;                @@parry_mastery;              end
-  def CMan.perfect_self;                 @@perfect_self;               end
+  def CMan.mug;                          @@mug;                        end
+  def CMan.nosetweak;                    @@nosetweak;                  end
+  def CMan.parry_specialization;         @@parry_specialization;       end
   def CMan.precision;                    @@precision;                  end
   def CMan.predators_eye;                @@predators_eye;              end
-  def CMan.punch_mastery;                @@punch_mastery;              end
-  def CMan.quickstrike;                  @@quickstrike;                end
+  def CMan.punch_specialization;         @@punch_specialization;       end
+  def CMan.retreat;                      @@retreat;                    end
   def CMan.rolling_krynch_stance;        @@rolling_krynch_stance;      end
-  def CMan.shadow_dance;                 @@shadow_dance;               end
-  def CMan.shadow_mastery;               @@shadow_mastery;             end
   def CMan.shield_bash;                  @@shield_bash;                end
-  def CMan.shield_charge;                @@shield_charge;              end
   def CMan.side_by_side;                 @@side_by_side;               end
-  def CMan.silent_strike;                @@silent_strike;              end
   def CMan.slippery_mind;                @@slippery_mind;              end
-  def CMan.specialization_i;             @@specialization_i;           end
-  def CMan.specialization_ii;            @@specialization_ii;          end
-  def CMan.specialization_iii;           @@specialization_iii;         end
-  def CMan.spell_cleaving;               @@spell_cleaving;             end
+  def CMan.spell_cleave;                 @@spell_cleave;               end
   def CMan.spell_parry;                  @@spell_parry;                end
   def CMan.spell_thieve;                 @@spell_thieve;               end
+  def CMan.spike_focus;                  @@spike_focus;                end
   def CMan.spin_attack;                  @@spin_attack;                end
   def CMan.staggering_blow;              @@staggering_blow;            end
+  def CMan.stance_perfection;            @@stance_perfection;          end
   def CMan.stance_of_the_mongoose;       @@stance_of_the_mongoose;     end
   def CMan.striking_asp;                 @@striking_asp;               end
   def CMan.stun_maneuvers;               @@stun_maneuvers;             end
-  def CMan.subdual_strike;               @@subdual_strike;             end
   def CMan.subdue;                       @@subdue;                     end
   def CMan.sucker_punch;                 @@sucker_punch;               end
   def CMan.sunder_shield;                @@sunder_shield;              end
   def CMan.surge_of_strength;            @@surge_of_strength;          end
-  def CMan.sweep;                        @@sweep;                      end
   def CMan.tackle;                       @@tackle;                     end
   def CMan.tainted_bond;                 @@tainted_bond;               end
+  def CMan.templeshot;                   @@templeshot;                 end
+  def CMan.throatchop;                   @@throatchop;                 end
   def CMan.trip;                         @@trip;                       end
   def CMan.true_strike;                  @@true_strike;                end
-  def CMan.twin_hammerfists;             @@twin_hammerfists;           end
   def CMan.unarmed_specialist;           @@unarmed_specialist;         end
-  def CMan.vanish;                       @@vanish;                     end
-  def CMan.weapon_bonding;               @@weapon_bonding;             end
+  def CMan.vault_kick;                   @@vault_kick;                 end
+  def CMan.weapon_specialization;        @@weapon_specialization;      end
   def CMan.whirling_dervish;             @@whirling_dervish;           end
 
   def CMan.acrobats_leap=(val);          @@acrobats_leap=val;          end
-  def CMan.armor_spike_focus=(val);      @@armor_spike_focus=val;      end
-  def CMan.bearhug=(val);                @@bearhug=val;                end
-  def CMan.berserk=(val);                @@berserk=val;                end
-  def CMan.block_mastery=(val);          @@block_mastery=val;          end
-  def CMan.bull_rush=(val);              @@bull_rush=val;              end
-  def CMan.burst_of_swiftness=(val);     @@burst_of_swiftness=val;     end
-  def CMan.charge=(val);                 @@charge=val;                 end
-  def CMan.cheapshots=(val);             @@cheapshots=val;             end
-  def CMan.combat_focus=(val);           @@combat_focus=val;           end
-  def CMan.combat_mastery=(val);         @@combat_mastery=val;         end
-  def CMan.combat_mobility=(val);        @@combat_mobility=val;        end
-  def CMan.combat_movement=(val);        @@combat_movement=val;        end
-  def CMan.combat_toughness=(val);       @@combat_toughness=val;       end
-  def CMan.coup_de_grace=(val);          @@coup_de_grace=val;          end
-  def CMan.crowd_press=(val);            @@crowd_press=val;            end
-  def CMan.cunning_defense=(val);        @@cunning_defense=val;        end
-  def CMan.cutthroat=(val);              @@cutthroat=val;              end
-  def CMan.dirtkick=(val);               @@dirtkick=val;               end
-  def CMan.disarm_weapon=(val);          @@disarm_weapon=val;          end
-  def CMan.dislodge=(val);               @@dislodge=val;               end
-  def CMan.divert=(val);                 @@divert=val;                 end
-  def CMan.duck_and_weave=(val);         @@duck_and_weave=val;         end
-  def CMan.dust_shroud=(val);            @@dust_shroud=val;            end
-  def CMan.evade_mastery=(val);          @@evade_mastery=val;          end
-  def CMan.executioners_stance=(val);    @@executioners_stance=val;    end
-  def CMan.feint=(val);                  @@feint=val;                  end
-  def CMan.flurry_of_blows=(val);        @@flurry_of_blows=val;        end
-  def CMan.garrote=(val);                @@garrote=val;                end
-  def CMan.grapple_mastery=(val);        @@grapple_mastery=val;        end
-  def CMan.griffins_voice=(val);         @@griffins_voice=val;         end
-  def CMan.groin_kick=(val);             @@groin_kick=val;             end
-  def CMan.hamstring=(val);              @@hamstring=val;              end
-  def CMan.haymaker=(val);               @@haymaker=val;               end
-  def CMan.headbutt=(val);               @@headbutt=val;               end
-  def CMan.inner_harmony=(val);          @@inner_harmony=val;          end
-  def CMan.internal_power=(val);         @@internal_power=val;         end
-  def CMan.ki_focus=(val);               @@ki_focus=val;               end
-  def CMan.kick_mastery=(val);           @@kick_mastery=val;           end
-  def CMan.mighty_blow=(val);            @@mighty_blow=val;            end
-  def CMan.mystic_strike=(val);          @@mystic_strike=val;          end
-  def CMan.parry_mastery=(val);          @@parry_mastery=val;          end
-  def CMan.perfect_self=(val);           @@perfect_self=val;           end
-  def CMan.precision=(val);              @@precision=val;              end
-  def CMan.predators_eye=(val);          @@predators_eye=val;          end
-  def CMan.punch_mastery=(val);          @@punch_mastery=val;          end
-  def CMan.quickstrike=(val);            @@quickstrike=val;            end
-  def CMan.rolling_krynch_stance=(val);  @@rolling_krynch_stance=val;  end
-  def CMan.shadow_dance=(val);           @@shadow_dance=val;           end
-  def CMan.shadow_mastery=(val);         @@shadow_mastery=val;         end
-  def CMan.shield_bash=(val);            @@shield_bash=val;            end
-  def CMan.shield_charge=(val);          @@shield_charge=val;          end
-  def CMan.side_by_side=(val);           @@side_by_side=val;           end
-  def CMan.silent_strike=(val);          @@silent_strike=val;          end
-  def CMan.slippery_mind=(val);          @@slippery_mind=val;          end
-  def CMan.specialization_i=(val);       @@specialization_i=val;       end
-  def CMan.specialization_ii=(val);      @@specialization_ii=val;      end
-  def CMan.specialization_iii=(val);     @@specialization_iii=val;     end
-  def CMan.spell_cleaving=(val);         @@spell_cleaving=val;         end
-  def CMan.spell_parry=(val);            @@spell_parry=val;            end
-  def CMan.spell_thieve=(val);           @@spell_thieve=val;           end
-  def CMan.spin_attack=(val);            @@spin_attack=val;            end
-  def CMan.staggering_blow=(val);        @@staggering_blow=val;        end
-  def CMan.stance_of_the_mongoose=(val); @@stance_of_the_mongoose=val; end
-  def CMan.striking_asp=(val);           @@striking_asp=val;           end
-  def CMan.stun_maneuvers=(val);         @@stun_maneuvers=val;         end
-  def CMan.subdual_strike=(val);         @@subdual_strike=val;         end
-  def CMan.subdue=(val);                 @@subdue=val;                 end
-  def CMan.sucker_punch=(val);           @@sucker_punch=val;           end
-  def CMan.sunder_shield=(val);          @@sunder_shield=val;          end
-  def CMan.surge_of_strength=(val);      @@surge_of_strength=val;      end
-  def CMan.sweep=(val);                  @@sweep=val;                  end
-  def CMan.tackle=(val);                 @@tackle=val;                 end
-  def CMan.tainted_bond=(val);           @@tainted_bond=val;           end
-  def CMan.trip=(val);                   @@trip=val;                   end
-  def CMan.true_strike=(val);            @@true_strike=val;            end
-  def CMan.twin_hammerfists=(val);       @@twin_hammerfists=val;       end
-  def CMan.unarmed_specialist=(val);     @@unarmed_specialist=val;     end
-  def CMan.vanish=(val);                 @@vanish=val;                 end
-  def CMan.weapon_bonding=(val);         @@weapon_bonding=val;         end
-  def CMan.whirling_dervish=(val);       @@whirling_dervish=val;       end
+  def CMan.bearhug=(val);                      @@bearhug=val;                    end
+  def CMan.berserk=(val);                      @@berserk=val;                    end
+  def CMan.block_specialization=(val);         @@block_specialization=val;       end
+  def CMan.bull_rush=(val);                    @@bull_rush=val;                  end
+  def CMan.burst_of_swiftness=(val);           @@burst_of_swiftness=val;         end
+  def CMan.cheapshots=(val);                   @@cheapshots=val;                 end
+  def CMan.combat_focus=(val);                 @@combat_focus=val;               end
+  def CMan.combat_mobility=(val);              @@combat_mobility=val;            end
+  def CMan.combat_movement=(val);              @@combat_movement=val;            end
+  def CMan.combat_toughness=(val);             @@combat_toughness=val;           end
+  def CMan.coup_de_grace=(val);                @@coup_de_grace=val;              end
+  def CMan.crowd_press=(val);                  @@crowd_press=val;                end
+  def CMan.cunning_defense=(val);              @@cunning_defense=val;            end
+  def CMan.cutthroat=(val);                    @@cutthroat=val;                  end
+  def CMan.dirtkick=(val);                     @@dirtkick=val;                   end
+  def CMan.disarm_weapon=(val);                @@disarm_weapon=val;              end
+  def CMan.dislodge=(val);                     @@dislodge=val;                   end
+  def CMan.divert=(val);                       @@divert=val;                     end
+  def CMan.duck_and_weave=(val);               @@duck_and_weave=val;             end
+  def CMan.dust_shroud=(val);                  @@dust_shroud=val;                end
+  def CMan.evade_specialization=(val);         @@evade_specialization=val;       end
+  def CMan.eviscerate=(val);                   @@eviscerate=val;                 end
+  def CMan.executioners_stance=(val);          @@executioners_stance=val;        end
+  def CMan.exsanguinate=(val);                 @@exsanguinate=val;               end
+  def CMan.eyepoke=(val);                      @@eyepoke=val;                    end
+  def CMan.feint=(val);                        @@feint=val;                      end
+  def CMan.flurry_of_blows=(val);              @@flurry_of_blows=val;            end
+  def CMan.garrote=(val);                      @@garrote=val;                    end
+  def CMan.grapple_specialization=(val);       @@grapple_specialization=val;     end
+  def CMan.griffins_voice=(val);               @@griffins_voice=val;             end
+  def CMan.groin_kick=(val);                   @@groin_kick=val;                 end
+  def CMan.hamstring=(val);                    @@hamstring=val;                  end
+  def CMan.haymaker=(val);                     @@haymaker=val;                   end
+  def CMan.headbutt=(val);                     @@headbutt=val;                   end
+  def CMan.inner_harmony=(val);                @@inner_harmony=val;              end
+  def CMan.internal_power=(val);               @@internal_power=val;             end
+  def CMan.ki_focus=(val);                     @@ki_focus=val;                   end
+  def CMan.kick_specialization=(val);          @@kick_specialization=val;        end
+  def CMan.kneebash=(val);                     @@kneebash=val;                   end
+  def CMan.leap_attack=(val);                  @@leap_attack=val;                end
+  def CMan.mighty_blow=(val);                  @@mighty_blow=val;                end
+  def CMan.mug=(val);                          @@mug=val;                        end
+  def CMan.nosetweak=(val);                    @@nosetweak=val;                  end
+  def CMan.parry_specialization=(val);         @@parry_specialization=val;       end
+  def CMan.precision=(val);                    @@precision=val;                  end
+  def CMan.predators_eye=(val);                @@predators_eye=val;              end
+  def CMan.punch_specialization=(val);         @@punch_specialization=val;       end
+  def CMan.retreat=(val);                      @@retreat=val;                    end
+  def CMan.rolling_krynch_stance=(val);        @@rolling_krynch_stance=val;      end
+  def CMan.shield_bash=(val);                  @@shield_bash=val;                end
+  def CMan.side_by_side=(val);                 @@side_by_side=val;               end
+  def CMan.slippery_mind=(val);                @@slippery_mind=val;              end
+  def CMan.spell_cleave=(val);                 @@spell_cleave=val;               end
+  def CMan.spell_parry=(val);                  @@spell_parry=val;                end
+  def CMan.spell_thieve=(val);                 @@spell_thieve=val;               end
+  def CMan.spike_focus=(val);                  @@spike_focus=val;                end
+  def CMan.spin_attack=(val);                  @@spin_attack=val;                end
+  def CMan.staggering_blow=(val);              @@staggering_blow=val;            end
+  def CMan.stance_perfection=(val);            @@stance_perfection=val;          end
+  def CMan.stance_of_the_mongoose=(val);       @@stance_of_the_mongoose=val;     end
+  def CMan.striking_asp=(val);                 @@striking_asp=val;               end
+  def CMan.stun_maneuvers=(val);               @@stun_maneuvers=val;             end
+  def CMan.subdue=(val);                       @@subdue=val;                     end
+  def CMan.sucker_punch=(val);                 @@sucker_punch=val;               end
+  def CMan.sunder_shield=(val);                @@sunder_shield=val;              end
+  def CMan.surge_of_strength=(val);            @@surge_of_strength=val;          end
+  def CMan.tackle=(val);                       @@tackle=val;                     end
+  def CMan.tainted_bond=(val);                 @@tainted_bond=val;               end
+  def CMan.templeshot=(val);                   @@templeshot=val;                 end
+  def CMan.throatchop=(val);                   @@throatchop=val;                 end
+  def CMan.trip=(val);                         @@trip=val;                       end
+  def CMan.true_strike=(val);                  @@true_strike=val;                end
+  def CMan.unarmed_specialist=(val);           @@unarmed_specialist=val;         end
+  def CMan.vault_kick=(val);                   @@vault_kick=val;                 end
+  def CMan.weapon_specialization=(val);        @@weapon_specialization=val;      end
+  def CMan.whirling_dervish=(val);             @@whirling_dervish=val;           end
 
   def CMan.method_missing(arg1, arg2=nil)
     nil
