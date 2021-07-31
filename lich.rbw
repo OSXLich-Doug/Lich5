@@ -1413,7 +1413,7 @@ class XMLParser
               :roundtime_end, :cast_roundtime_end, :last_pulse, :level, :next_level_value,
               :next_level_text, :society_task, :stow_container_id, :name, :game, :in_stream,
               :player_id, :prompt, :current_target_ids, :current_target_id, :room_window_disabled,
-              :dialogs
+              :dialogs, :room_id
   attr_accessor :send_fake_tags
 
   @@warned_deprecated_spellfront = 0
@@ -1498,6 +1498,8 @@ class XMLParser
 
     # psm 3.0 dialogdata updates
     @dialogs = {}
+    # real id updates
+    @room_id = nil
   end
 
   # for backwards compatability
@@ -1577,8 +1579,10 @@ class XMLParser
       elsif name == 'dialogData' and attributes['clear'] == 't' and PSM_3_DIALOG_IDS.include?(attributes["id"])
         @dialogs[attributes["id"]] ||= {}
         @dialogs[attributes["id"]].clear
-      elsif name == 'resource' or name == 'nav'
+      elsif name == 'resource'
         nil
+      elsif name == 'nav'
+        @room_id = attributes['rm'].to_i
       elsif name == 'pushStream'
         @in_stream = true
         @current_stream = attributes['id'].to_s
