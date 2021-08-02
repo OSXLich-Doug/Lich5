@@ -1,67 +1,6 @@
-## breakout for Armor and Shield released with PSM3
+## breakout for Shield released with PSM3
 ## new code for 5.0.16
 ## includes new functions .known? and .affordable?
-
-class Armor
-  @@armor_blessing                ||= 0
-  @@armor_reinforcement           ||= 0
-  @@armor_spike_mastery           ||= 0
-  @@armor_support                 ||= 0
-  @@armored_casting               ||= 0
-  @@armored_evasion               ||= 0
-  @@armored_fluidity              ||= 0
-  @@armored_stealth               ||= 0
-  @@crush_protection              ||= 0
-  @@puncture_protection           ||= 0
-  @@slash_protection              ||= 0
-
-  def Armor.armor_blessing;              @@armor_blessing;             end
-  def Armor.armor_reinforcement;         @@armor_reinforcement;        end
-  def Armor.armor_spike_mastery;         @@armor_spike_mastery;        end
-  def Armor.armor_support;               @@armor_support;              end
-  def Armor.armored_casting;             @@armored_casting;            end
-  def Armor.armored_evasion;             @@armored_evasion;            end
-  def Armor.armored_fluidity;            @@armored_fluidity;           end
-  def Armor.armored_stealth;             @@armored_stealth;            end
-  def Armor.crush_protection;            @@crush_protection;           end
-  def Armor.puncture_protection;         @@puncture_protection;        end
-  def Armor.slash_protection;            @@slash_protection;           end
-
-  def Armor.armor_blessing=(val);        @@armor_blessing=val;         end
-  def Armor.armor_reinforcement=(val);   @@armor_reinforcement=val;    end
-  def Armor.armor_spike_mastery=(val);   @@armor_spike_mastery=val;    end
-  def Armor.armor_support=(val);         @@armor_support=val;          end
-  def Armor.armored_casting=(val);       @@armored_casting=val;        end
-  def Armor.armored_evasion=(val);       @@armored_evasion=val;        end
-  def Armor.armored_fluidity=(val);      @@armored_fluidity=val;       end
-  def Armor.armored_stealth=(val);       @@armored_stealth=val;        end
-  def Armor.crush_protection=(val);      @@crush_protection=val;       end
-  def Armor.puncture_protection=(val);   @@puncture_protection=val;    end
-  def Armor.slash_protection=(val);      @@slash_protection=val;       end
-
-  def Armor.method_missing(arg1, arg2=nil)
-    nil
-  end
-  def Armor.[](name)
-    Armor.send(name.gsub(/[\s\-]/, '_').gsub("'", "").downcase)
-  end
-  def Armor.[]=(name,val)
-    Armor.send("#{name.gsub(/[\s\-]/, '_').gsub("'", "").downcase}=", val.to_i)
-  end
-
-  def Armor.known?(name)
-    Armor.send(name.gsub(/[\s\-]/, '_').gsub("'", "").downcase) > 0
-  end
-
-  ## Armor does not require stamina so costs are zero across the board
-  ## the following method is in place simply to make consistent with other
-  ## PSM class definitions.
-
-  def Armor.affordable?(name)
-    return true
-  end
-
-end
 
 class Shield
   @@adamantine_bulwark            ||= 0
@@ -164,25 +103,24 @@ class Shield
   def Shield.tortoise_stance=(val);       @@tortoise_stance=val;        end
   def Shield.tower_shield_focus=(val);    @@tower_shield_focus=val;     end
 
-  @@cost_hash = Hash.new
   @@cost_hash = { "adamantine_bulwark" => 0, "block_the_elements" => 0, "deflect_magic" => 0, "deflect_missiles" => 0, "deflect_the_elements" => 0, "disarming_presence" => 20, "guard_mastery" => 0, "large_shield_focus" => 0, "medium_shield_focus" => 0, "phalanx" => 0, "prop_up" => 0, "protective_wall" => 0, "shield_bash" => 9, "shield_charge" => 14, "shield_forward" => 0, "shield_mind" => 10, "shield_pin" => 15, "shield_push" => 7, "shield_riposte" => 20, "shield_spike_mastery" => 0, "shield_strike" => 15, "shield_strike_mastery" => 0, "shield_swiftness" => 0, "shield_throw" => 20, "shield_trample" => 14, "shielded_brawler" => 0, "small_shield_focus" => 0, "spell_block" => 0, "steady_shield" => 0, "steely_resolve" => 30, "tortoise_stance" => 20, "tower_shield_focus" => 0 }
 
   def Shield.method_missing(arg1, arg2=nil)
-    nil
+    echo "This is not a defined method for the Shield class."
   end
   def Shield.[](name)
-    Shield.send(name.gsub(/[\s\-]/, '_').gsub("'", "").downcase)
+    Shield.send(name.to_s.gsub(/[\s\-]/, '_').gsub("'", "").downcase)
   end
   def Shield.[]=(name,val)
-    Shield.send("#{name.gsub(/[\s\-]/, '_').gsub("'", "").downcase}=", val.to_i)
+    Shield.send("#{name.to_s.gsub(/[\s\-]/, '_').gsub("'", "").downcase}=", val.to_i)
   end
 
   def Shield.known?(name)
-    Shield.send(name.gsub(/[\s\-]/, '_').gsub("'", "").downcase) > 0
+    Shield.send(name.to_s.gsub(/[\s\-]/, '_').gsub("'", "").downcase) > 0
   end
 
   def Shield.affordable?(name)
-    @@cost_hash.fetch(name.gsub(/[\s\-]/, '_').gsub("'", "").downcase) < XMLData.stamina
+    @@cost_hash.fetch(name.to_s.gsub(/[\s\-]/, '_').gsub("'", "").downcase) < XMLData.stamina
   end
 
 end

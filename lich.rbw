@@ -8581,9 +8581,11 @@ def selfonly;      @availability != 'all';           end
 end
 
 ##updating PSM3 abilities via breakout - 20210801
-require_relative("./lib/feat-weapon.rb")
-require_relative("./lib/armor-shield.rb")
+require_relative("./lib/armor.rb")
 require_relative("./lib/cman.rb")
+require_relative("./lib/feat.rb")
+require_relative("./lib/shield.rb")
+require_relative("./lib/weapon.rb")
 
 class Stats
   @@race ||= 'unknown'
