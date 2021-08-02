@@ -249,7 +249,7 @@ class CMan
   @@cost_hash = { "acrobats_leap" => 0, "bearhug" => 10, "berserk" => 30, "block_specialization" => 0, "bull_rush" => 14, "burst_of_swiftness" => 30, "cheapshots" => 7, "combat_focus" => 0, "combat_mobility" => 0, "combat_movement" => 0, "combat_toughness" => 0, "coup_de_grace" => 20, "crowd_press" => 9, "cunning_defense" => 0, "cutthroat" => 14, "dirtkick" => 7, "disarm_weapon" => 7, "dislodge" => 9, "divert" => 7, "duck_and_weave" => 20, "dust_shroud" => 10, "evade_specialization" => 0, "eviscerate" => 14, "executioners_stance" => 20, "exsanguinate" => 15, "eyepoke" => 7, "feint" => 9, "flurry_of_blows" => 20, "footstomp" => 7, "garrote" => 10, "grapple_specialization" => 0, "griffins_voice" => 20, "groin_kick" => 7, "hamstring" => 9, "haymaker" => 9, "headbutt" => 9, "inner_harmony" => 20, "internal_power" => 20, "ki_focus" => 20, "kick_specialization" => 0, "kneebash" => 7, "leap_attack" => 15, "mighty_blow" => 15, "mug" => 15, "nosetweak" => 7, "parry_specialization" => 0, "precision" => 0, "predators_eye" => 20, "punch_specialization" => 0, "retreat" => 30, "rolling_krynch_stance" => 20, "shield_bash" => 9, "side_by_side" => 0, "slippery_mind" => 20, "spell_cleave" => 7, "spell_parry" => 0, "spell_thieve" => 7, "spike_focus" => 0, "spin_attack" => 15, "staggering_blow" => 15, "stance_perfection" => 0, "stance_of_the_mongoose" => 20, "striking_asp" => 20, "stun_maneuvers" => 10, "subdue" => 9, "sucker_punch" => 7, "sunder_shield" => 7, "surge_of_strength" => 30, "sweep" => 7, "swiftkick" => 7, "tackle" => 7, "tainted_bond" => 0, "templeshot" => 7, "throatchop" => 7, "trip" => 7, "true_strike" => 15, "unarmed_specialist" => 0, "vault_kick" => 30, "weapon_specialization" => 0, "whirling_dervish" => 20 }
 
   def CMan.method_missing(arg1, arg2=nil)
-    echo "This is not a defined method for CMan class."
+    echo "#{arg1} is not a defined CMan.  Was it moved to another Ability?"
   end
   def CMan.[](name)
     CMan.send(name.to_s.gsub(/[\s\-]/, '_').gsub("'", "").downcase)
@@ -264,6 +264,11 @@ class CMan
 
   def CMan.affordable?(name)
     @@cost_hash.fetch(name.to_s.gsub(/[\s\-]/, '_').gsub("'", "").downcase) < XMLData.stamina
+  end
+
+  def CMan.available?(name)
+    CMan.known?(name) and CMan.affordable?(name) and
+    !Effects::Cooldowns.to_h.transform_keys(&:downcase).include?(name.to_s.gsub(/[_\-]/, ' ').gsub("'", "").downcase) and !Effects::Debuffs.to_h.include?('Strained Muscles')
   end
 
 end

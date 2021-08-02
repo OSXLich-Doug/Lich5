@@ -99,4 +99,9 @@ class Weapon
     @@cost_hash.fetch(name.to_s.gsub(/[\s\-]/, '_').gsub("'", "").downcase) < XMLData.stamina
   end
 
+  def Weapon.available?(name)
+    Weapon.known?(name) and Weapon.affordable?(name) and
+    !Effects::Cooldowns.to_h.transform_keys(&:downcase).include?(name.to_s.gsub(/[_\-]/, ' ').gsub("'", "").downcase) and !Effects::Debuffs.to_h.include?('Strained Muscles')
+  end
+
 end

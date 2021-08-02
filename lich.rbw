@@ -8217,11 +8217,11 @@ module Games
         elsif (circle_num == 99) and (Society.status == 'Council of Light')
           ranks = Society.rank
         elsif (circle_num == 96)
-          if CMan[@name].to_i > 0
-            return true
-          else
             return false
-          end
+
+#          deprecate CMan from Spell class .known?
+#          See CMan, CMan.known? and CMan.available? methods in CMan class
+
         else
           return false
         end
@@ -8289,20 +8289,29 @@ module Games
       def remaining
         self.timeleft.as_time
       end
+
       def affordable?(options={})
         # fixme: deal with them dirty bards!
         release_options = options.dup
         release_options[:multicast] = nil
-        if (self.mana_cost(options) > 0) and (  !checkmana(self.mana_cost(options)) or (Spell[515].active? and !checkmana(self.mana_cost(options) + [self.mana_cost(release_options)/4, 1].max))  )
-          false
-        elsif (self.stamina_cost(options) > 0) and (Spell[9699].active? or not checkstamina(self.stamina_cost(options)))
+        if (self.stamina_cost(options) > 0) and (Spell[9699].active? or not checkstamina(self.stamina_cost(options)))
           false
         elsif (self.spirit_cost(options) > 0) and not checkspirit(self.spirit_cost(options) + 1 + [ 9912, 9913, 9914, 9916, 9916, 9916 ].delete_if { |num| !Spell[num].active? }.length)
           false
+        elsif (self.mana_cost(options) > 0)
+          ## convert Spell[9699].active? to Effects::Debuffs test (if Debuffs is where it shows)
+          if (Char.prof == "Monk" and Feat.known?(:mental_acuity)) and (Spell[9699].active? or not checkstamina(self.mana_cost(options)*2))
+            false
+          elsif (  !checkmana(self.mana_cost(options)) or (Spell[515].active? and !checkmana(self.mana_cost(options) + [self.mana_cost(release_options)/4, 1].max))  )
+            false
+        else
+          true
+        end
         else
           true
         end
       end
+
       def Spell.lock_cast
         script = Script.current
         @@cast_lock.push(script)
