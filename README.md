@@ -9,29 +9,27 @@ Past Activities:
 7) Add Animalistic Spirit regex - done
 8) Add thought regex for Invoker - done
 9) Change 'fill_hands' and all subord methods to one overloaded method with aliases - done
+10) Clean up exit procs for clean debug logs - done
+11) Update EAccess to deal with PEM damage / revocation - done
+12) Update Lich and core scripts to support new Spell Active | Buff | Cooldown | Debuff system - done
+13) Update various core scripts and data files in support of PSM3 and ranger updates - testing
 
-+) Clean up exit procs for clean debug logs - done
+When testing is complete and the update-lich5 script is updated to provide these
+features to our users, Lich5 repo will be retired and transferred to the standard
+Elanthia Online repositories.
 
-+) Update EAccess to deal with PEM damage / revocation - done
+Next Up! Break time
 
-Current Activities:
+Moving the following items to NextGen Lich5, which will continue to be separate
+from Elanthia Online until ready to transfer
 
-1) Planning release point and distribution mechanisms
+* Restructure Lich from monolithic file to multiple file structure - done
+* Convert all MSWindows calls to ruby stdlib - done
+o Build installer script to find Wizard / SF on Windows and save locations - done
+* Convert all game connections to Method 0 - done
+* Add window save parameters for GUI / account management - WIP
+* Rewrite map system to consume real room IDs - WIP
+* Recast missing gems rescue -WIP
+* Prep for Ruby 3 (Script class modifications, if possible) - yet to start
 
-Remaining Activities (not prioritized):
 
-1) Update Lich and core scripts to support new Spell Active | Buff | Cooldown | Debuff system
-2) Update various core scripts and data files in support of PSM3 and ranger updates
-3) Rewrite map system to consume real room IDs
-4) Restructure Lich from monolithic file to multiple file structure
-5) Add window save parameters for GUI / account management
-6) Convert all MSWindows calls to ruby stdlib
-7) Recast missing gems rescue
-8) Build installer script to find Wizard / SF on Windows and save locations
-9) Convert all game connections to Method 0
-
---Recommended Update Release Point--
-
-10) Transfer to EoL for maintenance
-11) Break time
-12) Prep for GTK4 if Urnon && Illthorn are not released
