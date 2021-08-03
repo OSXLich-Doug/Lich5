@@ -82,7 +82,7 @@ class Feat
   end
 
   def Feat.known?(name)
-    Feat.send(name.to_s.gsub(/[\s\-]/, '_').gsub("'", "").downcasee) > 0
+    Feat.send(name.to_s.gsub(/[\s\-]/, '_').gsub("'", "").downcase) > 0
   end
 
   def Feat.affordable?(name)
