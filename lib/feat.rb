@@ -72,7 +72,7 @@ class Feat
   @@cost_hash = { "absorb_magic" => 0, "chain_armor_proficiency" => 0, "combat_mastery" => 0, "critical_counter" => 0, "dispel_magic" => 0, "dragonscale_skin" => 0, "guard" => 0, "kroderine_soul" => 0, "light_armor_proficiency" => 0, "martial_arts_mastery" => 0, "martial_mastery" => 0, "mental_acuity" => 0, "mystic_strike" => 10, "perfect_self" => 0, "plate_armor_proficiency" => 0, "protect" => 0, "scale_armor_proficiency" => 0, "shadow_dance" => 30, "silent_strike" => 20, "vanish" => 30, "weapon_bonding" => 0 }
 
   def Feat.method_missing(arg1, arg2=nil)
-    echo "This method is not defined for Feat class."
+    echo "#{arg1} is not a defined Feat type.  Is it another Ability type?"
   end
   def Feat.[](name)
     Feat.send(name.to_s.gsub(/[\s\-]/, '_').gsub("'", "").downcase)

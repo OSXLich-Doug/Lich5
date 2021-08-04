@@ -106,7 +106,7 @@ class Shield
   @@cost_hash = { "adamantine_bulwark" => 0, "block_the_elements" => 0, "deflect_magic" => 0, "deflect_missiles" => 0, "deflect_the_elements" => 0, "disarming_presence" => 20, "guard_mastery" => 0, "large_shield_focus" => 0, "medium_shield_focus" => 0, "phalanx" => 0, "prop_up" => 0, "protective_wall" => 0, "shield_bash" => 9, "shield_charge" => 14, "shield_forward" => 0, "shield_mind" => 10, "shield_pin" => 15, "shield_push" => 7, "shield_riposte" => 20, "shield_spike_mastery" => 0, "shield_strike" => 15, "shield_strike_mastery" => 0, "shield_swiftness" => 0, "shield_throw" => 20, "shield_trample" => 14, "shielded_brawler" => 0, "small_shield_focus" => 0, "spell_block" => 0, "steady_shield" => 0, "steely_resolve" => 30, "tortoise_stance" => 20, "tower_shield_focus" => 0 }
 
   def Shield.method_missing(arg1, arg2=nil)
-    echo "This is not a defined method for the Shield class."
+    echo "#{arg1} is not a defined Shield type.  Is it another Ability type?"
   end
   def Shield.[](name)
     Shield.send(name.to_s.gsub(/[\s\-]/, '_').gsub("'", "").downcase)

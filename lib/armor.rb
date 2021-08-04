@@ -40,7 +40,7 @@ class Armor
   def Armor.slash_protection=(val);      @@slash_protection=val;       end
 
   def Armor.method_missing(arg1, arg2=nil)
-    echo "This is not a defined method for the Armor class."
+    echo "#{arg1} is not a defined Armor type.  Is it another Ability type?"
   end
   def Armor.[](name)
     Armor.send(name.to_s.gsub(/[\s\-]/, '_').gsub("'", "").downcase)
