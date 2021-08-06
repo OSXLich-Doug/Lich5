@@ -10147,15 +10147,18 @@ end
 #
 # Report an error if Lich 4.4 data is found
 #
+	
+## Lich.msgbox call below disabled until repaired - doug 8/6
+	
 if File.exists?("#{DATA_DIR}/lich.sav")
   Lich.log "error: Archaic Lich 4.4 configuration found: Please remove #{DATA_DIR}/lich.sav"
-  Lich.msgbox "error: Archaic Lich 4.4 configuration found: Please remove #{DATA_DIR}/lich.sav"
+  #Lich.msgbox "error: Archaic Lich 4.4 configuration found: Please remove #{DATA_DIR}/lich.sav"
 end
 
 if argv_options[:sal]
   unless File.exists?(argv_options[:sal])
     Lich.log "error: launch file does not exist: #{argv_options[:sal]}"
-    Lich.msgbox "error: launch file does not exist: #{argv_options[:sal]}"
+    #Lich.msgbox "error: launch file does not exist: #{argv_options[:sal]}"
     exit
   end
   Lich.log "info: launch file: #{argv_options[:sal]}"
