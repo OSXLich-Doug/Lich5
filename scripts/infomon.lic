@@ -9,12 +9,14 @@
                game: Gemstone
                tags: core
            required: Lich > 4.6.10
-            version: 1.18.6
+            version: 1.18.7
 
   Version Control:
     Major_change.feature_addition.bugfix
 
     changelog:
+      1.18.7 (2021-08-05):
+        Introduced first run flag for PSM check to prevent needless old CMan errors
       1.18.6 (2021-07-31):
         Changed CMan and added Armor, Feat, Shield and Weapon for PSM release
       1.18.5 (2021-07-28):
@@ -89,6 +91,7 @@ CharSettings['show_circles']  = true     if CharSettings['show_circles'].nil?
 CharSettings['show_bonuses']  = false    if CharSettings['show_bonuses'].nil?
 CharSettings['show_messages'] = true     if CharSettings['show_messages'].nil?
 CharSettings['show_gift']     = true     if CharSettings['show_gift'].nil?
+CharSettings['need_psm_update']    = true     if CharSettings['need_psm_update'].nil?
 
 bank_titles = {
   "Wehnimer's Landing"          => [ '[First Elanith Bank, Teller]', '[Clenchfist Bros. Banking, Lobby]'],
@@ -213,29 +216,36 @@ else
 
 end
 
-psm_abilities = [ 'Feat', 'Armor', 'Weapon', 'Shield', 'CMan' ]
+Gem::Version.new(LICH_VERSION) < Gem::Version.new('5.0.16') ? psm_abilities = [ 'CMan' ] : psm_abilities = [ 'Feat', 'Armor', 'Weapon', 'Shield', 'CMan' ]
 need_psm = []
-psm_abilities.each { |ability|
-  if !defined?(eval("#{ability}"))
-    pp "Encountered fatal error"
-    exit
-  elsif CharSettings["#{ability}".downcase].nil?
-    CharSettings["#{ability}".downcase] = Hash.new
-    need_psm << ability
-  else
-    begin
-      if !CharSettings["#{ability}".downcase].empty?
-        CharSettings["#{ability}".downcase].each_pair { |psm,rank| eval("#{ability}").send("#{psm}=", rank) }
+if CharSettings['need_psm_update']
+  need_psm = psm_abilities.dup
+  CharSettings['need_psm_update'] = false
+else
+  psm_abilities.each { |ability|
+    if !defined?(eval("#{ability}"))
+      pp "Encountered fatal error"
+      exit
+    elsif CharSettings["#{ability}".downcase].nil?
+      CharSettings["#{ability}".downcase] = Hash.new
+      need_psm << ability
+    else
+      begin
+        if !CharSettings["#{ability}".downcase].empty?
+          CharSettings["#{ability}".downcase].each_pair { |psm,rank| eval("#{ability}").send("#{psm}=", rank) }
+        end
+      rescue
+        pp "Bad juju happened here."
+        nil
       end
-    rescue
-      pp "Bad juju happened here."
-      nil
     end
-  end
-}
+  }
+end
+
+silence_me
 
 need_psm.each { |get_ability|
-    hide_lines = @done = false
+  hide_lines = @done = false
   action = proc { |server_string|
     if hide_lines
       if server_string =~ /<output class=""\/>|<prompt/
@@ -256,6 +266,7 @@ need_psm.each { |get_ability|
     wait_until { @done }
 }
 
+  silence_me
   echo 'done'
 
 #
