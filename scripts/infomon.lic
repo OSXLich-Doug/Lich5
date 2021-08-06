@@ -216,7 +216,7 @@ else
 
 end
 
-psm_abilities = [ 'Feat', 'Armor', 'Weapon', 'Shield', 'CMan' ]
+Gem::Version.new(LICH_VERSION) < Gem::Version.new('5.0.16') ? psm_abilities = [ 'CMan' ] : psm_abilities = [ 'Feat', 'Armor', 'Weapon', 'Shield', 'CMan' ]
 need_psm = []
 if CharSettings['need_psm_update']
   need_psm = psm_abilities.dup
